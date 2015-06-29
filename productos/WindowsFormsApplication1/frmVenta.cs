@@ -72,9 +72,9 @@ namespace WindowsFormsApplication1
                     this.ventaActual.Total += prod.Precio * prod.Existencia;
                     this.ventaActual.SubTotal += (prod.Precio - (prod.Precio * (Convert.ToDecimal(prod.Iva) / 100)))*prod.Existencia;
                 }
-                this.ventaActual.TotalIva = this.ventaActual.Total - this.ventaActual.SubTotal;
-                lblTotal.Text = "Total: $ " + this.ventaActual.Total;
-                lblSubTotal.Text = "Sub-total: $ " + this.ventaActual.SubTotal;
+                this.ventaActual.TotalIva = decimal.Round(this.ventaActual.Total - this.ventaActual.SubTotal,2);
+                lblTotal.Text = "Total: $ " + decimal.Round(this.ventaActual.Total,2);
+                lblSubTotal.Text = "Sub-total: $ " + decimal.Round(this.ventaActual.SubTotal,2);
                 dgvProductos.Refresh();
             }
         }
@@ -154,11 +154,19 @@ namespace WindowsFormsApplication1
                 documento.AddTitle(this.ventaActual.IdFactura + " " + this.ventaActual.Cliente.Nombre);
                 documento.AddCreator("littleWhiteBlueEyes");
                 documento.Open();
-                iTextSharp.text.Font fuenteTitulo = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.COURIER, 12, iTextSharp.text.Font.NORMAL, BaseColor.CYAN);
+                
+                iTextSharp.text.Image imagen = iTextSharp.text.Image.GetInstance(Path.Combine(Application.StartupPath,@"img\logo.jpg"));
+                imagen.BorderWidth = 0;
+                imagen.Alignment = Element.ALIGN_CENTER;
+                float percentage = 0.0f;
+                percentage = 150 / imagen.Width;
+                imagen.ScalePercent(percentage * 100);
+                documento.Add(imagen);
+                iTextSharp.text.Font fuenteTitulo = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.COURIER, 12, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 iTextSharp.text.Font fuenteHead = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.COURIER, 10, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 iTextSharp.text.Font fuenteCuerpo = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.COURIER, 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                 iTextSharp.text.Font fuenteFooter = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.COURIER, 8, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
-                Paragraph titulo = new Paragraph("littleWhiteBlueEyes Enterprise", fuenteTitulo);
+                Paragraph titulo = new Paragraph("Recibo de compra", fuenteTitulo);
                 titulo.Alignment = Element.ALIGN_CENTER;
                 documento.Add(new Paragraph(titulo));
                 documento.Add(Chunk.NEWLINE);
@@ -212,7 +220,7 @@ namespace WindowsFormsApplication1
                 }
                 documento.Add(tablaProductos);
                 documento.Add(Chunk.NEWLINE);
-                Paragraph footer = new Paragraph("littleWhiteBlueEyes Enterprise TradeMark 910 bandit México Developed by ViCross", fuenteFooter);
+                Paragraph footer = new Paragraph("W&B Enterprise México Developed by ViCross", fuenteFooter);
                 footer.Alignment = Element.ALIGN_CENTER;
                 documento.Add(new Paragraph(footer));
                 documento.Close();
